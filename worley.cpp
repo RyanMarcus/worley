@@ -73,10 +73,17 @@ std::unique_ptr<std::vector<unsigned char>> WorleyGrid::toImage(size_t dim) {
             double f4 = (*dists)[3] / MAX_DIST;
 
 
-
+            /* random linear combo
             toR->push_back(std::min(255.0, 100.0 * (a*f1 + b*f2 + c*f3)));
             toR->push_back(std::min(255.0, 100.0 * (b*f1 + c*f2 + a*f3)));
             toR->push_back(std::min(255.0, 100.0 * (c*f1 + b*f2 + a*f3)));
+            */
+            
+            // blue with neat things
+            toR->push_back(std::min(255.0, 550.0 * f1));
+            toR->push_back(std::min(255.0, 550.0 * f2));
+            toR->push_back(std::min(255.0, 550.0 * f3));
+
             
             // cool blue purple things
             /*
