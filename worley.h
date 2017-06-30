@@ -3,6 +3,7 @@
 #include <random>
 #include <memory>
 #include <time.h>
+#include "color_funcs.h"
 
 struct Point {
     double x;
@@ -21,8 +22,8 @@ public:
     void getNearestPoints(double x, double y,
                           std::vector<double>& outVal);
 
-    template <typename WF>
-    std::unique_ptr<std::vector<unsigned char>> toImage(size_t dim, WF& wf);
+    std::unique_ptr<std::vector<unsigned char>> toImage(size_t dim,
+                                                        ColorFunc& wf);
     
 private:
     std::default_random_engine generator;

@@ -4,23 +4,34 @@
 #ifndef COLOR_FUNCS_H
 #define COLOR_FUNCS_H
 
-
-class Icebergs {
+class ColorFunc {
 public:
-    const char* getName() { return "Icebergs"; }
-    const char* getDescription() {
+    virtual const char* getName() = 0;
+    virtual const char* getDescription() = 0;
+
+    virtual void getPixelValues(std::vector<double>& dists,
+                                unsigned int& r,
+                                unsigned int& g,
+                                unsigned int& b,
+                                unsigned int& a) = 0;
+};
+
+class Icebergs : public ColorFunc {
+public:
+    virtual const char* getName() { return "Icebergs"; }
+    virtual const char* getDescription() {
         return "Orange \"icebergs\", representing the difference "
             "in distance from the two closest points.";
     }
 
-    void getPixelValues(std::vector<double>& dists,
+    virtual void getPixelValues(std::vector<double>& dists,
                         unsigned int& r,
                         unsigned int& g,
                         unsigned int& b,
                         unsigned int& a);
 };
 
-class RandomLinearCombination {
+class RandomLinearCombination : public ColorFunc {
 private:
     double c1;
     double c2;
@@ -29,12 +40,12 @@ private:
     
 public:
     RandomLinearCombination();
-    const char* getName() { return "Linear combination"; }
-    const char* getDescription() {
+    virtual const char* getName() { return "Linear combination"; }
+    virtual const char* getDescription() {
         return "A random linear combination of the first three distances.";
     }
 
-    void getPixelValues(std::vector<double>& dists,
+    virtual void getPixelValues(std::vector<double>& dists,
                         unsigned int& r,
                         unsigned int& g,
                         unsigned int& b,
@@ -42,14 +53,14 @@ public:
 };
 
 
-class EachChannel {
+class EachChannel : public ColorFunc {
 public:
-    const char* getName() { return "Independent channels"; }
-    const char* getDescription() {
+    virtual const char* getName() { return "Independent channels"; }
+    virtual const char* getDescription() {
         return "Use the first, second, and third nearest points for the R, B, and G values.";
     }
 
-    void getPixelValues(std::vector<double>& dists,
+    virtual void getPixelValues(std::vector<double>& dists,
                         unsigned int& r,
                         unsigned int& g,
                         unsigned int& b,
@@ -57,14 +68,14 @@ public:
 };
 
 
-class FourthDiff {
+class FourthDiff : public ColorFunc {
 public:
-    const char* getName() { return "4th difference"; }
-    const char* getDescription() {
+    virtual const char* getName() { return "4th difference"; }
+    virtual const char* getDescription() {
         return "Difference from the fourth, third, and second component with the first are used for the RGB values.";
     }
 
-    void getPixelValues(std::vector<double>& dists,
+    virtual void getPixelValues(std::vector<double>& dists,
                         unsigned int& r,
                         unsigned int& g,
                         unsigned int& b,

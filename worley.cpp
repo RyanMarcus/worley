@@ -48,9 +48,8 @@ void WorleyGrid::getNearestPoints(double x, double y,
    
 }
 
-template <typename WF>
 std::unique_ptr<std::vector<unsigned char>>
-WorleyGrid::toImage(size_t dim, WF& wf) {
+WorleyGrid::toImage(size_t dim, ColorFunc& wf) {
     std::unique_ptr<std::vector<unsigned char>> toR(
         new std::vector<unsigned char>()
         );
@@ -95,7 +94,7 @@ int main(int argc, char** argv) {
     for (int i = 0; i < 1; i++) {
         wg.resetPoints();
         wg.addRandomPoints(10);
-        auto img = wg.toImage<decltype(selected)>(10000, selected);
+        auto img = wg.toImage(10000, selected);
 
         snprintf(buf, 100, "test%d.png", i);
         
