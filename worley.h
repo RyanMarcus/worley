@@ -9,6 +9,7 @@ struct Point {
     double y;
 };
 
+
 class WorleyGrid {
 public:
     WorleyGrid();
@@ -17,11 +18,12 @@ public:
     void addRandomPoints(unsigned int n);
 
     void resetPoints();
-    std::unique_ptr<std::vector<double>> getNearestPoints(double x,
-                                                          double y,
-                                                          unsigned int k);
+    void getNearestPoints(double x, double y,
+                          std::vector<double>& outVal);
 
-    std::unique_ptr<std::vector<unsigned char>> toImage(size_t dim);
+    template <typename WF>
+    std::unique_ptr<std::vector<unsigned char>> toImage(size_t dim, WF& wf);
+    
 private:
     std::default_random_engine generator;
 
