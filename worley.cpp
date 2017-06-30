@@ -132,30 +132,32 @@ int main(int argc, char** argv) {
         exit(-1);
     }
 
-    Icebergs wf1;
-    RandomLinearCombination wf2;
-    EachChannel wf3;
-    FourthDiff wf4;
-    
-    ColorFunc* cf = NULL;
-    switch (type) {
-    case 1:
-        cf = &wf1;
-        break;
-    case 2:
-        cf = &wf2;
-        break;
-    case 3:
-        cf = &wf3;
-        break;
-    case 4:
-        cf = &wf4;
-        break;
-    default:
-        abort();
-    }
+ 
 
     for (int i = 0; i < num; i++) {
+        Icebergs wf1;
+        RandomLinearCombination wf2;
+        EachChannel wf3;
+        FourthDiff wf4;
+    
+        ColorFunc* cf = NULL;
+        switch (type) {
+        case 1:
+            cf = &wf1;
+            break;
+        case 2:
+            cf = &wf2;
+            break;
+        case 3:
+            cf = &wf3;
+            break;
+        case 4:
+            cf = &wf4;
+            break;
+        default:
+            abort();
+        }
+    
         wg.resetPoints();
         wg.addRandomPoints(10);
         auto img = wg.toImage(width, height, *cf);
