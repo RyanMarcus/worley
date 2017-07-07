@@ -32,10 +32,28 @@ public:
     };
 
     virtual void getPixelValues(std::vector<double>& dists,
+                                std::vector<unsigned int>& pIDs,
                                 unsigned int& r,
                                 unsigned int& g,
                                 unsigned int& b,
                                 unsigned int& a) = 0;
+};
+
+class Cellular : public ColorFunc {
+public:
+    virtual const char* getName() { return "Cellular"; }
+    virtual const char* getDescription() {
+        return "Classic Worley noise, distance to first point.";
+    }
+
+    virtual void getPixelValues(std::vector<double>& dists,
+                                std::vector<unsigned int>& pIDs,
+                                unsigned int& r,
+                                unsigned int& g,
+                                unsigned int& b,
+                                unsigned int& a);
+
+    virtual size_t getNumPointsNeeded();
 };
 
 class Icebergs : public ColorFunc {
@@ -47,10 +65,11 @@ public:
     }
 
     virtual void getPixelValues(std::vector<double>& dists,
-                        unsigned int& r,
-                        unsigned int& g,
-                        unsigned int& b,
-                        unsigned int& a);
+                                std::vector<unsigned int>& pIDs,
+                                unsigned int& r,
+                                unsigned int& g,
+                                unsigned int& b,
+                                unsigned int& a);
 
     virtual size_t getNumPointsNeeded();
 };
@@ -70,10 +89,11 @@ public:
     }
 
     virtual void getPixelValues(std::vector<double>& dists,
-                        unsigned int& r,
-                        unsigned int& g,
-                        unsigned int& b,
-                        unsigned int& a);
+                                std::vector<unsigned int>& pIDs,
+                                unsigned int& r,
+                                unsigned int& g,
+                                unsigned int& b,
+                                unsigned int& a);
 
     virtual size_t getNumPointsNeeded();
 };
@@ -87,10 +107,11 @@ public:
     }
 
     virtual void getPixelValues(std::vector<double>& dists,
-                        unsigned int& r,
-                        unsigned int& g,
-                        unsigned int& b,
-                        unsigned int& a);
+                                std::vector<unsigned int>& pIDs,
+                                unsigned int& r,
+                                unsigned int& g,
+                                unsigned int& b,
+                                unsigned int& a);
 
     virtual size_t getNumPointsNeeded();
 };
@@ -104,10 +125,36 @@ public:
     }
 
     virtual void getPixelValues(std::vector<double>& dists,
-                        unsigned int& r,
-                        unsigned int& g,
-                        unsigned int& b,
-                        unsigned int& a);
+                                std::vector<unsigned int>& pIDs,
+                                unsigned int& r,
+                                unsigned int& g,
+                                unsigned int& b,
+                                unsigned int& a);
+
+    virtual size_t getNumPointsNeeded();
+};
+
+class NearestPoint : public ColorFunc {
+private:
+    const size_t numRandomColors = 5;
+    
+    std::vector<unsigned char> red;
+    std::vector<unsigned char> green;
+    std::vector<unsigned char> blue;
+    std::default_random_engine generator;
+public:
+    NearestPoint();
+    virtual const char* getName() { return "Nearest point"; }
+    virtual const char* getDescription() {
+        return "Chooses a random color for each point, and colors pixels according to their closest point.";
+    }
+
+    virtual void getPixelValues(std::vector<double>& dists,
+                                std::vector<unsigned int>& pIDs,
+                                unsigned int& r,
+                                unsigned int& g,
+                                unsigned int& b,
+                                unsigned int& a);
 
     virtual size_t getNumPointsNeeded();
 };

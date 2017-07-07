@@ -57,6 +57,7 @@ void WorleyGrid::resetPoints() {
 
 void WorleyGrid::getNearestPoints(double x, double y,
                                   std::vector<double>& outVal,
+                                  std::vector<unsigned int>& pointIDs,
                                   size_t numPoints) {
     std::unique_ptr<std::vector<double>> toR(new std::vector<double>);
 
@@ -66,7 +67,15 @@ void WorleyGrid::getNearestPoints(double x, double y,
             + pow(points[i]->y - y, 2);
         outVal[i] = d;
     }
-    
+
+    // first, sort the pointIDs vector by the values in outVal
+    std::sort(pointIDs.begin(), pointIDs.end(),
+              [outVal](auto a, auto b) {
+                  return outVal[a] < outVal[b];
+              });
+
+    // next sort the outVals themselves.
+    // TODO we could recover the sorted order from pointIDs
     std::sort(outVal.begin(), outVal.end());
 
     for (size_t i = 0; i < numPoints; i++) {
@@ -82,6 +91,12 @@ WorleyGrid::toImage(size_t width, size_t height, ColorFunc& wf) {
         );
 
     std::vector<double> dists(points.size());
+    std::vector<unsigned int> pointIDs;
+
+    for (size_t i = 0; i < points.size(); i++) {
+        pointIDs.push_back(i);
+    }
+    
     size_t neededPoints = wf.getNumPointsNeeded();
     if (neededPoints == 0)
         neededPoints = points.size();
@@ -92,13 +107,13 @@ WorleyGrid::toImage(size_t width, size_t height, ColorFunc& wf) {
             // RGBA channels
             double lx = (double)x / (double)width;
 
-            getNearestPoints(lx, ly, dists, neededPoints);
+            getNearestPoints(lx, ly, dists, pointIDs, neededPoints);
 
             unsigned int r = 0;
             unsigned int g = 0;
             unsigned int b = 0;
             unsigned int a = 0;
-            wf.getPixelValues(dists, r, g, b, a);
+            wf.getPixelValues(dists, pointIDs, r, g, b, a);
             toR->push_back(std::min((unsigned int) 255, r));
             toR->push_back(std::min((unsigned int) 255, g));
             toR->push_back(std::min((unsigned int) 255, b));
@@ -111,7 +126,7 @@ WorleyGrid::toImage(size_t width, size_t height, ColorFunc& wf) {
 
 void printHelp() {
     printf("worley [-t type] [-w width] [-h height] [-n numImages] [-m]\n");
-    printf("\t-t type, 1 - 4, for different coloring functions (default: 1)\n");
+    printf("\t-t type, 1 - 6, for different coloring functions (default: 1)\n");
     printf("\t-w width, the width of the image (default: 200)\n");
     printf("\t-h height, the height of the image (default: 200)\n");
     printf("\t-n numImages, the number of images to generate (default: 1)\n");
@@ -163,10 +178,12 @@ int main(int argc, char** argv) {
  
 
     for (int i = 0; i < num; i++) {
-        Icebergs wf1;
-        RandomLinearCombination wf2;
-        EachChannel wf3;
-        FourthDiff wf4;
+        Cellular wf1;
+        Icebergs wf2;
+        RandomLinearCombination wf3;
+        EachChannel wf4;
+        FourthDiff wf5;
+        NearestPoint wf6;
     
         ColorFunc* cf = NULL;
         switch (type) {
@@ -182,6 +199,12 @@ int main(int argc, char** argv) {
         case 4:
             cf = &wf4;
             break;
+        case 5:
+            cf = &wf5;
+            break;
+        case 6:
+            cf = &wf6;
+            break;
         default:
             abort();
         }
@@ -190,7 +213,7 @@ int main(int argc, char** argv) {
         wg.addRandomPoints(10);
         auto img = wg.toImage(width, height, *cf);
 
-        snprintf(buf, 100, "test%d.png", i);
+        snprintf(buf, 100, "out_t%d_n%d.png", type, i);
         
         lodepng::encode(buf, *img, width, height);
     }

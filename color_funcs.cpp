@@ -22,11 +22,28 @@
 #include <chrono>
 
 
+size_t Cellular::getNumPointsNeeded() {
+    return 1;
+}
+
+void Cellular::getPixelValues(std::vector<double>& dists,
+                              std::vector<unsigned int>& pIDs,
+                              unsigned int& r,
+                              unsigned int& g,
+                              unsigned int& b,
+                              unsigned int& a) {
+    r = 500.0 * dists[0]; 
+    g = 500.0 * dists[0]; 
+    b = 500.0 * dists[0]; 
+    a = 255;
+}
+
 size_t Icebergs::getNumPointsNeeded() {
     return 2;
 }
 
 void Icebergs::getPixelValues(std::vector<double>& dists,
+                              std::vector<unsigned int>& pIDs,
                               unsigned int& r,
                               unsigned int& g,
                               unsigned int& b,
@@ -51,10 +68,11 @@ size_t RandomLinearCombination::getNumPointsNeeded() {
 }
 
 void RandomLinearCombination::getPixelValues(std::vector<double>& dists,
-                              unsigned int& r,
-                              unsigned int& g,
-                              unsigned int& b,
-                              unsigned int& a) {
+                                             std::vector<unsigned int>& pIDs,
+                                             unsigned int& r,
+                                             unsigned int& g,
+                                             unsigned int& b,
+                                             unsigned int& a) {
     double f1 = dists[0];
     double f2 = dists[1];
     double f3 = dists[2];
@@ -72,10 +90,11 @@ size_t EachChannel::getNumPointsNeeded() {
 }
 
 void EachChannel::getPixelValues(std::vector<double>& dists,
-                              unsigned int& r,
-                              unsigned int& g,
-                              unsigned int& b,
-                              unsigned int& a) {
+                                 std::vector<unsigned int>& pIDs,
+                                 unsigned int& r,
+                                 unsigned int& g,
+                                 unsigned int& b,
+                                 unsigned int& a) {
     r = 550.0 * dists[0];
     g = 550.0 * dists[1];
     b = 550.0 * dists[2];
@@ -87,10 +106,11 @@ size_t FourthDiff::getNumPointsNeeded() {
 }
 
 void FourthDiff::getPixelValues(std::vector<double>& dists,
-                              unsigned int& r,
-                              unsigned int& g,
-                              unsigned int& b,
-                              unsigned int& a) {
+                                std::vector<unsigned int>& pIDs,
+                                unsigned int& r,
+                                unsigned int& g,
+                                unsigned int& b,
+                                unsigned int& a) {
 
     double f1 = dists[0];
     double f2 = dists[1];
@@ -100,4 +120,37 @@ void FourthDiff::getPixelValues(std::vector<double>& dists,
     g = 400.0 * (f3 - f1);
     b = 400.0 * (f2 - f1);
     a = 255;
+}
+
+
+size_t NearestPoint::getNumPointsNeeded() {
+    return 1;
+}
+
+NearestPoint::NearestPoint() {
+    generator.seed(std::chrono::system_clock::now().time_since_epoch().count());
+    std::uniform_int_distribution<> dist(0, 255);
+    
+    for (size_t i = 0; i < numRandomColors; i++) {
+        red.push_back(dist(generator));
+        green.push_back(dist(generator));
+        blue.push_back(dist(generator));
+    }
+    
+}
+
+void NearestPoint::getPixelValues(std::vector<double>& dists,
+                                  std::vector<unsigned int>& pIDs,
+                                  unsigned int& r,
+                                  unsigned int& g,
+                                  unsigned int& b,
+                                  unsigned int& a) {
+    
+    int ptIdx = pIDs[0] % numRandomColors;
+
+    r = red[ptIdx];
+    g = green[ptIdx];
+    b = green[ptIdx];
+    a = 255;
+    
 }

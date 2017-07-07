@@ -39,7 +39,8 @@ public:
 
     void resetPoints();
     void getNearestPoints(double x, double y,
-                          std::vector<double>& outVal,
+                          std::vector<double>& dists,
+                          std::vector<unsigned int>& pointIDs, 
                           size_t numPoints);
 
     std::unique_ptr<std::vector<unsigned char>> toImage(size_t width,
