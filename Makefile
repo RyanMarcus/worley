@@ -1,4 +1,4 @@
-CFLAGS=-Wall -g -pedantic -O3 -pg
+CFLAGS=-Wall -g -pedantic -O3
 
 worley: worley.cpp worley.h lodepng.o color_funcs.o
 	g++ $(CFLAGS) lodepng.o color_funcs.o worley.cpp -o worley
