@@ -32,7 +32,7 @@ void Cellular::getPixelValues(std::vector<double>& dists,
                               unsigned int& g,
                               unsigned int& b,
                               unsigned int& a) {
-    r = 500.0 * dists[0]; 
+    r = 500.0 * dists[0];
     g = 500.0 * dists[0]; 
     b = 500.0 * dists[0]; 
     a = 255;

@@ -23,6 +23,7 @@
 #include <memory>
 #include <time.h>
 #include "color_funcs.h"
+#include "trajectory.h"
 
 struct Point {
     double x;
@@ -43,6 +44,9 @@ public:
                           std::vector<unsigned int>& pointIDs, 
                           size_t numPoints);
 
+    void createTrajectories();
+    void setTime(double t);
+
     std::unique_ptr<std::vector<unsigned char>> toImage(size_t width,
                                                         size_t height,
                                                         ColorFunc& wf);
@@ -52,6 +56,7 @@ private:
 
     
     std::vector<std::unique_ptr<Point>> points;
+    std::vector<std::unique_ptr<Trajectory>> trajectories;
     
 };
 

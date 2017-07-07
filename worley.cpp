@@ -54,6 +54,22 @@ void WorleyGrid::resetPoints() {
     points.clear();
 }
 
+void WorleyGrid::createTrajectories() {
+    for (auto& point : points) {
+        std::unique_ptr<Trajectory> trj(new Trajectory(point->x,
+                                                       point->y,
+                                                       generator));
+        trajectories.push_back(std::move(trj));
+    }
+}
+
+void WorleyGrid::setTime(double t) {
+    for (size_t i = 0; i < points.size(); i++) {
+        trajectories[i]->getPosition(t,
+                                     points[i]->x,
+                                     points[i]->y);
+    }
+}
 
 void WorleyGrid::getNearestPoints(double x, double y,
                                   std::vector<double>& outVal,
@@ -125,27 +141,29 @@ WorleyGrid::toImage(size_t width, size_t height, ColorFunc& wf) {
 }
 
 void printHelp() {
-    printf("worley [-t type] [-w width] [-h height] [-n numImages] [-m]\n");
+    printf("worley [-t type] [-w width] [-h height] [-n numImages] [-m] [-a]\n");
     printf("\t-t type, 1 - 6, for different coloring functions (default: 1)\n");
     printf("\t-w width, the width of the image (default: 200)\n");
     printf("\t-h height, the height of the image (default: 200)\n");
     printf("\t-n numImages, the number of images to generate (default: 1)\n");
     printf("\t-m, if given, makes a collage/montage of the resulting images\n");
+    printf("\t-a, if given, create an animation. Uses -n as the number of frames.\n");
 }
               
 int main(int argc, char** argv) {
     WorleyGrid wg;
-    char buf[100];
-    memset(buf, sizeof(char), 100);
+    char buf[1000];
+    memset(buf, sizeof(char), 1000);
 
     int type = 1;
     size_t width = 200;
     size_t height = 200;
     int num = 1;
     bool doMontage = false;
+    bool doAnimation = false;
     
     int c;
-    while ((c = getopt(argc, argv, "mt:w:h:n:")) != -1) {
+    while ((c = getopt(argc, argv, "mt:w:h:n:a")) != -1) {
         switch (c) {
         case 't':
             type = atoi(optarg);
@@ -162,6 +180,9 @@ int main(int argc, char** argv) {
         case 'm':
             doMontage = true;
             break;
+        case 'a':
+            doAnimation = true;
+            break;
         case '?':
         default:
             printHelp();
@@ -173,6 +194,10 @@ int main(int argc, char** argv) {
     if (doMontage && num == 1) {
         fprintf(stderr, "Cannot create a montage from one image! Please specify a number of images with the -n flag, or do not specify -m.\n");
         exit(-1);
+    }
+
+    if (doMontage && doAnimation) {
+        fprintf(stderr, "Cannot create a montage and an animation at the same time. Please specify only one of -a or -m.\n");
     }
 
  
@@ -211,14 +236,27 @@ int main(int argc, char** argv) {
     
         wg.resetPoints();
         wg.addRandomPoints(10);
-        auto img = wg.toImage(width, height, *cf);
+        wg.createTrajectories();
 
-        snprintf(buf, 100, "out_t%d_n%d.png", type, i);
-        
-        lodepng::encode(buf, *img, width, height);
+        for (unsigned int f = 0; f < (double)num; f++) {
+            double t = (double)f / (double)num;
+            wg.setTime(t);
+            auto img = wg.toImage(width, height, *cf);
+            snprintf(buf, 1000, "out_t%d_n%05d_f%05d.png", type, i, f);
+            lodepng::encode(buf, *img, width, height);
+        }
+
+        if (doAnimation) {
+            snprintf(buf, 1000, "convert -loop 0 out_t%d_*.png out_t%d.mp4",
+                     type, type);
+            system(buf);
+            break;
+
+        }
     }
 
     if (doMontage) {
-        system("montage test*.png montage.png");
+        system("montage out*.png montage.png");
+        system("rm out*.png");
     }
 }
