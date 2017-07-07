@@ -27,6 +27,9 @@ class ColorFunc {
 public:
     virtual const char* getName() = 0;
     virtual const char* getDescription() = 0;
+    virtual size_t getNumPointsNeeded() {
+        return 0;
+    };
 
     virtual void getPixelValues(std::vector<double>& dists,
                                 unsigned int& r,
@@ -48,6 +51,8 @@ public:
                         unsigned int& g,
                         unsigned int& b,
                         unsigned int& a);
+
+    virtual size_t getNumPointsNeeded();
 };
 
 class RandomLinearCombination : public ColorFunc {
@@ -69,6 +74,8 @@ public:
                         unsigned int& g,
                         unsigned int& b,
                         unsigned int& a);
+
+    virtual size_t getNumPointsNeeded();
 };
 
 
@@ -84,6 +91,8 @@ public:
                         unsigned int& g,
                         unsigned int& b,
                         unsigned int& a);
+
+    virtual size_t getNumPointsNeeded();
 };
 
 
@@ -99,6 +108,8 @@ public:
                         unsigned int& g,
                         unsigned int& b,
                         unsigned int& a);
+
+    virtual size_t getNumPointsNeeded();
 };
 
 

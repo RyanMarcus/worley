@@ -56,17 +56,22 @@ void WorleyGrid::resetPoints() {
 
 
 void WorleyGrid::getNearestPoints(double x, double y,
-                                  std::vector<double>& outVal) {
+                                  std::vector<double>& outVal,
+                                  size_t numPoints) {
     std::unique_ptr<std::vector<double>> toR(new std::vector<double>);
 
     // sort the points by their distance to (x, y)
     for (size_t i = 0; i < points.size(); i++) {
-        double d = sqrt(pow(points[i]->x - x, 2)
-                        + pow(points[i]->y - y, 2));
+        double d = pow(points[i]->x - x, 2)
+            + pow(points[i]->y - y, 2);
         outVal[i] = d;
     }
     
     std::sort(outVal.begin(), outVal.end());
+
+    for (size_t i = 0; i < numPoints; i++) {
+        outVal[i] = sqrt(outVal[i]);
+    }
    
 }
 
@@ -77,14 +82,17 @@ WorleyGrid::toImage(size_t width, size_t height, ColorFunc& wf) {
         );
 
     std::vector<double> dists(points.size());
-
+    size_t neededPoints = wf.getNumPointsNeeded();
+    if (neededPoints == 0)
+        neededPoints = points.size();
+    
     for (size_t y = 0; y < height; y++) {
         double ly =  (double)y / (double)height;
         for (size_t x = 0; x < width; x++) {
             // RGBA channels
             double lx = (double)x / (double)width;
 
-            getNearestPoints(lx, ly, dists);
+            getNearestPoints(lx, ly, dists, neededPoints);
 
             unsigned int r = 0;
             unsigned int g = 0;

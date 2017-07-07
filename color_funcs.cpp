@@ -21,6 +21,11 @@
 #include "color_funcs.h"
 #include <chrono>
 
+
+size_t Icebergs::getNumPointsNeeded() {
+    return 2;
+}
+
 void Icebergs::getPixelValues(std::vector<double>& dists,
                               unsigned int& r,
                               unsigned int& g,
@@ -40,6 +45,11 @@ RandomLinearCombination::RandomLinearCombination() {
     c3 = dist(generator);
 }
 
+
+size_t RandomLinearCombination::getNumPointsNeeded() {
+    return 3;
+}
+
 void RandomLinearCombination::getPixelValues(std::vector<double>& dists,
                               unsigned int& r,
                               unsigned int& g,
@@ -56,6 +66,11 @@ void RandomLinearCombination::getPixelValues(std::vector<double>& dists,
         
 }
 
+
+size_t EachChannel::getNumPointsNeeded() {
+    return 3;
+}
+
 void EachChannel::getPixelValues(std::vector<double>& dists,
                               unsigned int& r,
                               unsigned int& g,
@@ -67,6 +82,9 @@ void EachChannel::getPixelValues(std::vector<double>& dists,
     a = 255;
 }
 
+size_t FourthDiff::getNumPointsNeeded() {
+    return 4;
+}
 
 void FourthDiff::getPixelValues(std::vector<double>& dists,
                               unsigned int& r,
