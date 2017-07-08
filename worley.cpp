@@ -247,7 +247,8 @@ int main(int argc, char** argv) {
         }
 
         if (doAnimation) {
-            snprintf(buf, 1000, "convert -loop 0 out_t%d_*.png out_t%d.mp4",
+            snprintf(buf, 1000, "ffmpeg -framerate 24 -i "
+                     "out_t%d_n00000_f%%05d.png -pix_fmt yuv420p out_t%d.mp4",
                      type, type);
             system(buf);
             break;
