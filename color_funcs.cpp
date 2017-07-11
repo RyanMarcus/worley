@@ -56,7 +56,7 @@ void Icebergs::getPixelValues(std::vector<double>& dists,
 
 RandomLinearCombination::RandomLinearCombination() {
     generator.seed(std::chrono::system_clock::now().time_since_epoch().count());
-    std::uniform_real_distribution<double> dist(-1.0, 3.0);
+    std::uniform_real_distribution<double> dist(-1, 3);
     c1 = dist(generator);
     c2 = dist(generator);
     c3 = dist(generator);

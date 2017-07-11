@@ -25,6 +25,10 @@
 #include "color_funcs.h"
 #include "trajectory.h"
 
+enum DistType {
+    euclidean, manhattan
+};
+
 struct Point {
     double x;
     double y;
@@ -33,7 +37,7 @@ struct Point {
 
 class WorleyGrid {
 public:
-    WorleyGrid();
+    WorleyGrid(DistType d);
 
     void addRandomPoint();
     void addRandomPoints(unsigned int n);
@@ -52,9 +56,9 @@ public:
                                                         ColorFunc& wf);
     
 private:
-    std::default_random_engine generator;
+    DistType D;
 
-    
+    std::default_random_engine generator;
     std::vector<std::unique_ptr<Point>> points;
     std::vector<std::unique_ptr<Trajectory>> trajectories;
     

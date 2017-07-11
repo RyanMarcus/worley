@@ -31,7 +31,7 @@
 
 #define MAX_DIST (sqrt(2.0))
 
-WorleyGrid::WorleyGrid() {
+WorleyGrid::WorleyGrid(DistType D) : D(D) {
     generator.seed(std::chrono::system_clock::now().time_since_epoch().count());
 }
 
@@ -79,8 +79,19 @@ void WorleyGrid::getNearestPoints(double x, double y,
 
     // sort the points by their distance to (x, y)
     for (size_t i = 0; i < points.size(); i++) {
-        double d = pow(points[i]->x - x, 2)
-            + pow(points[i]->y - y, 2);
+        double d;
+        switch (D) {
+        case euclidean:
+            d = pow(points[i]->x - x, 2)
+                + pow(points[i]->y - y, 2);
+            break;
+        case manhattan:
+            d = abs(points[i]->x - x) + abs(points[i]->y - y);
+            break;
+        default:
+            fprintf(stderr, "Invalid distance enum option!\n");
+            abort();
+        }
         outVal[i] = d;
     }
 
@@ -141,8 +152,11 @@ WorleyGrid::toImage(size_t width, size_t height, ColorFunc& wf) {
 }
 
 void printHelp() {
-    printf("worley [-t type] [-w width] [-h height] [-n numImages] [-m] [-a]\n");
+    printf("worley [-t type] [-d distance measure] [-w width] [-h height] [-n numImages] [-m] [-a]\n");
     printf("\t-t type, 1 - 6, for different coloring functions (default: 1)\n");
+    printf("\t-d distance function (default: 1)\n");
+    printf("\t\t1 for euclidean,\n");
+    printf("\t\t2 for manhatten\n");
     printf("\t-w width, the width of the image (default: 200)\n");
     printf("\t-h height, the height of the image (default: 200)\n");
     printf("\t-n numImages, the number of images to generate (default: 1)\n");
@@ -151,7 +165,7 @@ void printHelp() {
 }
               
 int main(int argc, char** argv) {
-    WorleyGrid wg;
+
     char buf[1000];
     memset(buf, sizeof(char), 1000);
 
@@ -161,9 +175,10 @@ int main(int argc, char** argv) {
     int num = 1;
     bool doMontage = false;
     bool doAnimation = false;
+    DistType d = euclidean;;
     
     int c;
-    while ((c = getopt(argc, argv, "mt:w:h:n:a")) != -1) {
+    while ((c = getopt(argc, argv, "mt:d:w:h:n:a")) != -1) {
         switch (c) {
         case 't':
             type = atoi(optarg);
@@ -183,6 +198,20 @@ int main(int argc, char** argv) {
         case 'a':
             doAnimation = true;
             break;
+        case 'd':
+            switch (atoi(optarg)) {
+            case 1:
+                d = euclidean;
+                break;
+            case 2:
+                d = manhattan;
+                break;
+            default:
+                fprintf(stderr, "Invalid distance type!\n");
+                printHelp();
+                exit(-1);
+            };
+            break;
         case '?':
         default:
             printHelp();
@@ -192,15 +221,21 @@ int main(int argc, char** argv) {
     }
 
     if (doMontage && num == 1) {
-        fprintf(stderr, "Cannot create a montage from one image! Please specify a number of images with the -n flag, or do not specify -m.\n");
+        fprintf(stderr, "Cannot create a montage from one image! "
+                "Please specify a number of images with the -n flag, "
+                "or do not specify -m.\n");
+        printHelp();
         exit(-1);
     }
 
     if (doMontage && doAnimation) {
-        fprintf(stderr, "Cannot create a montage and an animation at the same time. Please specify only one of -a or -m.\n");
+        fprintf(stderr, "Cannot create a montage and an animation at "
+                "the same time. Please specify only one of -a or -m.\n");
+        printHelp();
+        exit(-1);
     }
 
- 
+    WorleyGrid wg(d);
 
     for (int i = 0; i < num; i++) {
         Cellular wf1;
@@ -244,6 +279,9 @@ int main(int argc, char** argv) {
             auto img = wg.toImage(width, height, *cf);
             snprintf(buf, 1000, "out_t%d_n%05d_f%05d.png", type, i, f);
             lodepng::encode(buf, *img, width, height);
+
+            if (!doAnimation)
+                break;
         }
 
         if (doAnimation) {
