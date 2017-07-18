@@ -54,11 +54,12 @@ void WorleyGrid::resetPoints() {
     points.clear();
 }
 
+template <typename T>
 void WorleyGrid::createTrajectories() {
     for (auto& point : points) {
-        std::unique_ptr<Trajectory> trj(new Trajectory(point->x,
-                                                       point->y,
-                                                       generator));
+        std::unique_ptr<Trajectory> trj(new T(point->x,
+                                              point->y,
+                                              generator));
         trajectories.push_back(std::move(trj));
     }
 }
@@ -271,7 +272,7 @@ int main(int argc, char** argv) {
     
         wg.resetPoints();
         wg.addRandomPoints(10);
-        wg.createTrajectories();
+        wg.createTrajectories<EllipticalTrajectory>();
 
         for (unsigned int f = 0; f < (double)num; f++) {
             double t = (double)f / (double)num;

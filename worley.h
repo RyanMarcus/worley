@@ -48,7 +48,9 @@ public:
                           std::vector<unsigned int>& pointIDs, 
                           size_t numPoints);
 
+    template <typename T>
     void createTrajectories();
+    
     void setTime(double t);
 
     std::unique_ptr<std::vector<unsigned char>> toImage(size_t width,
