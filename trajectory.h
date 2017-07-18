@@ -5,7 +5,7 @@
 
 class Trajectory {
 public:
-    Trajectory(double startX, double startY,
+    Trajectory(double& startX, double& startY,
                std::default_random_engine& generator);
 
 

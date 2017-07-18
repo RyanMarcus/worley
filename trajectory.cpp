@@ -2,12 +2,17 @@
 #include <random>
 #include "math.h"
 
-Trajectory::Trajectory(double startX, double startY,
-               std::default_random_engine& generator) :
-    startX(startX), startY(startY) {
+Trajectory::Trajectory(double& sX, double& sY,
+               std::default_random_engine& generator) {
     
     std::uniform_real_distribution<double> dist(0.0, 1.0);
 
+    sX = dist(generator);
+    sY = dist(generator);
+
+    startX = sX;
+    startY = sY;
+    
     endX = dist(generator);
     endY = dist(generator);
 }
