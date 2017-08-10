@@ -1,4 +1,4 @@
-# Worley noise generator
+# Worley visual sonority generator
 
 ```
 make
